@@ -58,20 +58,28 @@ app.post("/logar", (req, res) => {
     if( !(email) || !(senha) ){
         
         res.status(206).send("Faltam dados");
-    }//else if (senha !== confirmacao){ //caso da senha estar errado ou e-mail não ter sido encontrado
-        
-    //     res.status(401).send("Email ou senha incorretos");
-    //}
+    }
     else{
         let requisicao = bancoDados.collection("usuarios").findOne({ email: email , senha: senha});
         requisicao.then(resposta => {
             if(resposta && (resposta.senha === senha)){
-                res.status(200).send("Usuário logado com sucesso!");
+                res.status(200).send({usuario: resposta.nome , id: resposta._id}); // é por aqui que o token deve ser enviado
             }else{
                 res.status(401).send("email ou senha incorretos");
             }
         });
     }
+});
+
+app.get("/atividade" , (req, res) => {
+    //"_id" : _id: `ObjectId(${req.headers.id})`
+    //console.log(req)
+    let requisicao = bancoDados.collection("usuarios").find({}).toArray() //.findOne({});
+    requisicao.then(resposta => {
+        console.log(resposta);
+        res.send(resposta)
+    })
+        
 })
 
 app.listen(process.env.PORTA);
